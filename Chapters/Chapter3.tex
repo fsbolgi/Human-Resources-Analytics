@@ -1,0 +1,178 @@
+\section{Association Rules}
+	In questo capitolo cercheremo di comprendere se vi sono delle relazioni nascoste tra i dati, ossia ad esempio se vi sono delle caratteristiche di un impiegato che si riscontrano più frequentemente insieme. In particolare utilizzeremo l'algoritmo Apriori per generare gli itemsets frequenti e ricavarne le relative regole di associazione.$\newline$
+	Nell'analisi il passaggio fondamentale è la scelta dei valori di \textit{minimum support} e \textit{minimum confidence}. Infatti al variare di \textit{min\_sup} potremmo passare da pochi itemsets molto frequenti a tanti che compaiono raramente. Allo stesso modo ponendo un \textit{min\_conf} alto otterremmo poche regole che si verificano quasi sempre, mentre con valori più bassi ne avremmo un numero più alto ma con meno probabilità che siano veritiere.$\newline$
+	I valori tipici scelti sono 2-10\% per \textit{min\_sup} e 70-90\% per \textit{min\_conf}.$\newline$
+	Una volta identificate le regole di associazione più significative possiamo utilizzarle per diversi scopi. Ad esempio possono servire per predire il valore di una variabile oppure per sostituire dei valori mancanti.$\newline$
+	Nel nostro caso il database non presenta missing values per cui non è necessario sfruttare le regole di associazione per gestirli. Useremo quindi le regole estratte per capire quali siano le caratteristiche di un impiegato che influenzano positivamente la probabilità che questo lasci il lavoro.
+
+\subsection{Preparazione dei dati}
+	Prima di poter procedere con l'analisi è necessario trasformare il nostro database relazionale in uno transazionale. Ogni record quindi equivale ad una transazione e i valori che assume per ogni attributo rappresentano gli items. Inoltre, poiché l'algoritmo Apriori lavora su attributi categorici, quelli numerici sono stati discretizzati e trasformati in stringhe. $\newline$
+	Nel primo capitolo, relativo alla data understanding, avevamo suddiviso le variabili continue in 15 bins, seguendo la regola di Sturges. Tuttavia, in questo capitolo, abbiamo ritenuto migliore diminuire la quantità di bins poiché un numero troppo alto di valori distinti per una variabile poteva portare a pochi itemsets frequenti e di conseguenza poche regole di associazione.	I due valori che sono stati presi in considerazione quindi sono 3 e 5 in quanto consentono di mantenere la suddivisione in 15 bins fatta precedentemente ed eseguire un semplice raggruppamento. Dopo alcuni esperimenti si è deciso di utilizzare 5 bins per variabile in quanto questo permetteva una maggiore distinzione tra i valori ma allo stesso tempo forniva regole interessanti. $\newline$
+	Un fattore da tenere in considerazione che potrebbe portare a risultati errati è lo sbilanciamento dei dati. Infatti se una variabile assume spesso un particolare valore è possibile che gli itemsets più frequenti lo contengano tutti. Per ovviare a questo problema è necessario prendere in considerazione anche valori di support minori ed eseguire una scrematura tra i risultati ottenuti.
+
+\subsection{Estrazione degli itemsets più frequenti}
+	Il valore ottimale per il supporto minimo è molto influenzato dal contesto in cui stiamo lavorando e dalla distribuzione dei dati. Per questo motivo non esiste una regola o un indicatore per scegliere il valore migliore ma è necessario procedere tramite esperimenti.$\newline$
+	Abbiamo quindi eseguito l'algoritmo diverse volte per valori decrescenti di support. Nella seguente tabella possiamo vedere i 20 itemsets più frequenti di lunghezza almeno due.
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|c|c|}
+			\hline
+			\textbf{Itemsets} & \textbf{Support} \\ \hline
+			('WA0', 'PL5Y0') & 0.839 \\
+			('L0', 'PL5Y0') & 0.742 \\
+			('L0', 'WA0') & 0.629 \\
+			('L0', 'WA0', 'PL5Y0') & 0.613 \\
+			('low', 'PL5Y0') & 0.483 \\
+			('TSC3', 'PL5Y0') & 0.421 \\
+			('low', 'WA0') & 0.418 \\
+			('medium', 'PL5Y0') & 0.418 \\
+			('low', 'WA0', 'PL5Y0') & 0.415 \\
+			('TSC3', 'WA0') & 0.370 \\ \hline
+		\end{tabular}
+		\quad
+		\begin{tabular}{|c|c|}
+			\hline
+			\textbf{Itemsets} & \textbf{Support} \\ \hline
+			('medium', 'WA0') & 0.367 \\
+			('TSC3', 'WA0', 'PL5Y0') & 0.363 \\
+			('medium', 'WA0', 'PL5Y0') & 0.358 \\
+			('low', 'L0') & 0.343 \\
+			('medium', 'L0') & 0.342 \\
+			('low', 'L0', 'PL5Y0') & 0.339 \\
+			('medium', 'L0', 'PL5Y0') & 0.330 \\
+			('TSC3', 'L0') & 0.324 \\
+			('TSC3', 'L0', 'PL5Y0') & 0.316 \\
+			('ADH2', 'PL5Y0') & 0.291 \\ \hline
+		\end{tabular}
+		\caption{I primi 20 itemsets più frequenti.}
+	\end{table}\vspace{-0.5cm}$\newline$
+	Abbiamo quindi ottenuto 20 itemsets di dimensione 2 o 3 con support compreso tra 0.291 e 0.839. Questi valori così alti sono giustificati dal fatto che il nostro database è sbilanciato per diverse variabili. Infatti gli item presenti sono:\vspace{-0.2cm}
+	\begin{itemize}
+		\item 'PL5Y0' : \textit{promotion\_last\_5years} = 0, gli impiegati che non hanno ricevuto promozioni negli ultimi 5 anni comprendono il 97.9\% di tutti i dati;\vspace{-0.2cm}
+		\item 'WA0': \textit{work\_accident} = 0, quelli che non hanno avuto incidenti sul lavoro rappresentano l'87.5\% del database;
+		\vspace{-0.2cm}
+		\item 'L0' : \textit{left} = 0, il 76.2\% dei lavoratori dell'azienda non hanno lasciato il lavoro;\vspace{-0.2cm}
+		\item 'low' e 'medium' : si riferiscono al salario, sono rispettivamente il 48.8\% e il 43.0\% dell'intera popolazione;\vspace{-0.2cm}
+		\item 'TSC3' : \textit{time\_spent\_company} = 3, più del 40\% ha lavorato nell'azienda per esattamente 3 anni.\vspace{-0.2cm}
+	\end{itemize} 
+	Di conseguenza possiamo concludere che gli itemsets più frequenti che abbiamo ottenuto derivano dal fatto che i singoli item sono estremamente frequenti e non che la presenza di alcuni valori insieme implichi una correlazione. Si è deciso quindi di non considerare gli itemsets contenenti 'PL5Y0' e 'WA0' in quanto sono i due valori più sbilanciati e non forniscono informazioni ulteriori sui dati. Come ulteriore riprova abbiamo generato gli itemsets massimali per min\_sup = 0.10. Quelli risultanti contenevano tutti sia 'PL5Y0' che 'WA0', confermando l'ipotesi che tali valori sono troppo comuni per essere utili. Eliminando gli itemsets relativi si ottiene:
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|c|c|}
+			\hline
+			\textbf{Itemsets} & \textbf{Support} \\ \hline
+			('low', 'L0') & 0.343 \\
+			('medium', 'L0') & 0.342 \\
+			('TSC3', 'L0') & 0.324 \\
+			('NP3', 'L0') & 0.266 \\
+			('NP4', 'L0') & 0.264 \\
+			('SL4', 'L0') & 0.228 \\
+			('ADH2', 'L0') & 0.226 \\
+			('SL5', 'L0') & 0.219 \\
+			('TSC3', 'low') & 0.214 \\
+			('ADH3', 'L0') & 0.212 \\ \hline
+		\end{tabular}
+		\quad
+		\begin{tabular}{|c|c|}
+			\hline
+			\textbf{Itemsets} & \textbf{Support} \\ \hline
+			('TSC2', 'L0') & 0.213 \\
+			('sales', 'L0') & 0.208 \\
+			('SL3', 'L0') & 0.206 \\
+			('ADH4', 'L0') & 0.206 \\
+			('LE2', 'L0') & 0.189 \\
+			('LE3', 'L0') & 0.188 \\
+			('TSC3', 'medium') & 0.181 \\
+			('LE4', 'L0') & 0.174 \\
+			('ADH2', 'TSC3') & 0.166 \\
+			('LE5', 'L0') & 0.161 \\ \hline
+		\end{tabular}\vspace{-0.2cm}
+		\caption{I 20 itemsets più frequenti che non contengono 'PL5Y0' e 'WA0'.}
+	\end{table}\vspace{-0.5cm}$\newline$
+	Notiamo quindi che gli itemsets contengono quasi tutti il valore 'L0', tuttavia poiché \textit{left} è l'attributo centrale nella nostra analisi cancellare anche questo valore potrebbe portare a previsioni scorrette.$\newline$
+	Per ottenere anche associazioni interessanti è stato necessario diminuire il valore del support, infatti se \textit{min\_sup} è maggiore della frequenza di un valore singolo non è possibile che vengano generati itemsets che lo contengano. D'altra parte fissare un valore troppo basso di support genera una mole di risultati difficilmente gestibile e regole valide solo per una porzione molto ristretta della popolazione. $\newline$
+	Alla fine si è deciso di procedere all'estrazione delle regole di associazione fissando \textit{min\_sup} = 0.07. Questo dà origine a 731 itemsets frequenti che contengono una varietà sufficientemente ampia di items. 
+
+\subsection{Estrazione delle regole di associazione}
+	In questa analisi, per ridurre il numero di regole prodotte, abbiamo considerato solo regole di associazione aventi un unico elemento nella testa della regola.$\newline$
+	Questa semplificazione tuttavia non comporta particolari restrizioni nell'analisi. Infatti, le regole che più ci interessano sono quelle che hanno come conseguenza l'eventuale abbandono dell'azienda da parte dell'impiegato. Inoltre, regole aventi più elementi nella testa non aggiungono informazioni più significative rispetto alle altre.$\newline$
+	Ad esempio, per comprendere questo concetto, possiamo pensare ad una regola del tipo $\{a, b\} \rightarrow \{c, d\}$ e alle sue semplificazioni $\{a, b\} \rightarrow c$ e $\{a, b\} \rightarrow d$. Se la regola più complessa presenta sufficiente support e confidence allora sarà lo stesso anche per le due più semplici. Infatti se abbiamo due itemsets $X, Y$ con $X \subseteq Y$ allora per il support avremo che $s(X)\geq s(Y)$ e lo stesso vale per la confidence $c(X)\geq c(Y)$.$\newline$
+	Abbiamo quindi preso i pattern frequenti estratti nel paragrafo precedente, che erano solo quelli di dimensione maggiore di 2 in quanto è necessario la presenza di almeno due item per non formare una regola banale, ed applicato l'algoritmo Apriori.$\newline$
+	Nel valutare le regole risultanti abbiamo dato una forte importanza al valore del \textit{lift} perché questo indica l'accuratezza della regola. Non abbiamo tenuto in considerazione quindi le regole aventi \textit{lift} minore di 1.1. Essendo infatti vicino ad 1 significa che le occorrenze della testa e del corpo della regola sono quasi indipendenti l'una dall'altra.$\newline$
+	Anche in questo caso non esiste un metodo per stabilire il livello di confidence più adeguato quindi procederemo in modo sperimentale. Abbiamo quindi testato valori decrescenti di \textit{min\_conf} a partire da 0.90 ed osservato i risultati ottenuti. Nella seguente tabella sono riportate in ordine di \textit{lift} le regole aventi \textit{min\_sup} maggiore di 0.7 e \textit{min\_conf} maggiore di 0.9.
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|c|c|c|}
+			\hline
+			Rule & Conf & Lift \\ \hline
+			(NP2, L1, LE2, TSC3) $ \rightarrow $ 'SL2' & 0.95 & 6.32 \\
+			('NP2', 'L1', 'TSC3') $ \rightarrow $ 'SL2' & 0.94 & 6.30 \\
+			('NP2', 'L1', 'LE2') $ \rightarrow $ 'SL2' & 0.94 & 6.28 \\
+			('SL2', 'L1', 'TSC3') $ \rightarrow $ 'NP2' & 0.99 & 6.23 \\
+			('L1', 'LE2', 'TSC3') $ \rightarrow $ 'SL2' & 0.94 & 6.23 \\
+			('NP2', 'L1') $ \rightarrow $ 'SL2' & 0.93 & 6.20 \\
+			('L1', 'LE2', 'TSC3') $\rightarrow$ 'NP2' & 0.98 & 6.17 \\
+			('L1', 'TSC3') $ \rightarrow $ 'SL2' & 0.92 & 6.12 \\
+			('L1', 'TSC3') $ \rightarrow $ 'NP2' & 0.96 & 6.05 \\
+			('SL2', 'LE2', 'TSC3') $ \rightarrow $ 'NP2' & 0.96 & 6.04 \\  \hline
+		\end{tabular}
+		\quad
+		\begin{tabular}{|c|c|c|}
+			\hline
+			Rule & Conf & Lift \\ \hline
+			('SL2', 'L1') $ \rightarrow $ 'NP2' & 0.96 & 6.03 \\
+			('NP2', 'LE2', 'TSC3') $ \rightarrow $ 'SL2'  & 0.91 & 6.02 \\
+			('L1', 'LE2') $\rightarrow$ 'NP2' & 0.94 & 5.89 \\
+			('L1', 'AMH2') $\rightarrow$ 'NP2' & 0.93 & 5.86 \\
+			('SL2', 'NP2', 'LE2') $\rightarrow$ 'L1' & 0.96 & 4.02 \\
+			('SL2', 'NP2', 'TSC3') $ \rightarrow $ 'L1' & 0.95 & 3.99 \\
+			('SL2', 'LE2', 'TSC3') $\rightarrow$ 'L1' & 0.94 & 3.95 \\
+			('NP2', 'LE2', 'TSC3') $\rightarrow$ 'L1' & 0.93 & 3.91 \\ 
+			('SL2', 'NP2') $ \rightarrow $ 'L1' & 0.90 & 3.78 \\
+			('SL2', 'NP2') $ \rightarrow $ 'TSC3' & 0.94 & 2.19 \\ \hline
+		\end{tabular}
+		\caption{Le 20 regole aventi lift più alto.}
+	\end{table}\vspace{-0.5cm}$\newline$
+	Si osserva facilmente che le regole risultanti contengono una combinazione dei valori 'NP2', 'LE2', 'SL2', 'TSC3' e 'L1'. Il che indica una forte correlazione tra la presenza di tali valori in contemporanea in un record. Questi valori rappresentano un impiegato che ha portato a termine 2 progetti, ha un livello di soddisfazione ed una valutazione da parte dell'azienda piuttosto basse (rispettivamente tra 0.272-0.454 e tra 0.488-0.616) e ha passato 3 anni nella compagnia prima di licenziarsi.$\newline$
+	Questo significa che se riscontriamo un lavoratore che presenta almeno 2 di queste caratteristiche è fortemente probabile che possegga anche le altre 3.
+
+
+\subsection{Predire tramite le regole di associazione se un impiegato lascerà l'azienda}
+	Per predire in modo più accurato possibile l'eventuale licenziamento di un impiegato abbiamo preso in considerazione solo le regole aventi come conseguenza \textit{left} uguale a 0 o ad 1. Infatti abbiamo ritenuto necessario creare anche una caratterizzazione del lavoratore che decide di non licenziarsi per controllare che le regole siano relative solo a coloro che lasciano e non a qualunque impiegato. Le regole che abbiamo ottenuto sono le seguenti:	
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|c|c|c|}
+			\hline
+			Rule & Conf & Lift \\ \hline
+			('SL2', 'NP2', 'LE2') $\rightarrow$ 'L1' & 0.96 & 4.02 \\
+			('SL2', 'NP2', 'TSC3') $ \rightarrow $ 'L1' & 0.95 & 3.99 \\
+			('SL2', 'LE2', 'TSC3') $\rightarrow$ 'L1' & 0.94 & 3.95 \\
+			('NP2', 'LE2', 'TSC3') $\rightarrow$ 'L1' & 0.93 & 3.91 \\ 
+			('SL2', 'NP2') $ \rightarrow $ 'L1' & 0.90 & 3.78 \\
+			('NP2', 'ADH2', 'TSC3') $\rightarrow$ 'L1' & 0.89 & 3.75 \\
+			('SL2', 'LE2') $\rightarrow$ 'L1' & 0.87 & 3.65 \\
+			('NP2', 'TSC3', 'low') $\rightarrow$ 'L1' & 0.86 & 3.62 \\ 
+			('SL2', 'TSC3') $\rightarrow$ 'L1' & 0.85 & 3.57 \\ 
+			('NP2', 'LE2') $\rightarrow$ 'L1' & 0.84 & 3.52 \\\hline
+		\end{tabular}
+		\quad
+		\begin{tabular}{|c|c|c|}
+			\hline
+			Rule & Conf & Lift \\ \hline			
+			(ADH3', 'TSC3') $\rightarrow$ 'L0' & 0.99 & 1.30 \\
+			('TSC2', 'NP3') $ \rightarrow $ 'L0' & 0.99 & 1.30 \\
+			('SL3', 'NP3') $\rightarrow$ 'L0' & 0.98 & 1.30 \\			
+			('TSC2', 'low') $ \rightarrow $ 'L0' & 0.99 & 1.29 \\
+			('TSC2', 'NP4') $\rightarrow$ 'L0' & 0.99 & 1.29 \\
+			('LE3', 'TSC3') $\rightarrow$ 'L0' & 0.98 & 1.29 \\ 
+			('ADH3', 'NP3') $\rightarrow$ 'L0' & 0.98 & 1.29 \\ 
+			('LE3', 'medium') $\rightarrow$ 'L0' & 0.98 & 1.29 \\ 
+			('high') $\rightarrow$ 'L0' & 0.93 & 1.23 \\
+			('WA1',) $\rightarrow$ 'L0' & 0.92 & 1.21 \\\hline
+		\end{tabular}
+		\caption{Le 10 regole aventi lift più alto per \textit{left} = 1 a sinistra e \textit{left} = 0 a destra.}
+	\end{table}\vspace{-0.5cm}$\newline$
+	Come avevamo notato nei capitoli precedenti, gli impiegati che hanno lasciato sono molto più caratterizzati di quelli che rimangono, infatti nel primo caso i livelli di \textit{lift} sono molto più alti. $\newline$
+	Tra i valori nella tabella osserviamo che 'TSC3' e 'low' sono presenti sia per \textit{left} = 1 che per \textit{left} = 0. Questo significa che non sono caratteristiche specifiche di una categoria di impiegati ma che, come avevamo osservato per gli itemsets, sono semplicemente dei valori frequenti.$\newline$
+	La presenza in un record di almeno una coppia tra i  valori 'SL2', 'NP2', 'LE2' e 'ADH2' incrementa in modo positivo la probabilità che l'impiegato lascerà l'azienda. Possiamo quindi classificare quelli che si licenziano come impiegati che solitamente hanno un livello di soddisfazione basso, compreso tra 0.272 e 0.454, hanno svolto solo 2 progetti, hanno ricevuto una valutazione inferiore alla media, tra 0.488 e 0.616, e hanno lavorato in media tra le 6.5 e 8.4 ore al giorno. $\newline$
+	Gli impiegati che invece hanno deciso di restare sono caratterizzati da un numero di ore giornaliere più alte, tra le 8.4 e le 10.4, hanno passato 2 anni nell'azienda, lavorato a 3 o 4 progetti ed hanno ricevuto una valutazione nella media, ossia tra 0.616 e 0.744. Non è chiaro se ricevono uno stipendio leggermente più alto oppure semplicemente questa regola non è presente tra quelli che hanno lasciato poichè il support è troppo basso visto lo sbilanciamento del database. Lo stesso ragionamento vale per la presenza della regola che \textit{work\_accident} = 1 implica che l'impiegato è rimasto. 

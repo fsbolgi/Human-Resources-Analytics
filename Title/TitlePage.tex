@@ -1,0 +1,30 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage[top=4cm, bottom=2cm, outer=2cm, inner=2cm]{geometry}
+\usepackage{PTSerif} % Use the Paratype Serif font
+%\renewcommand*\familydefault{\sfdefault}
+\begin{document}
+	\begin{titlepage}
+	\raggedright % Right align everything
+
+	{\textit{\Large Nicholas Montenegro} \normalsize - { Data Science and Business}} % Author name
+	\\
+	{\textit{\Large Francesca Sbolgi} \normalsize - { Computer Science} \hspace*{1.2cm}} % Author name
+	\\
+	{\textit{\Large Elisabetta Triolo} \normalsize - { Digital Humanities}\hspace*{1.1cm}} % Author name
+	
+	\tikz[remember picture,overlay] \node[opacity=0.6,inner sep=0pt] at (current page){\includegraphics[width=\paperwidth,height=15cm]{../dataset-original-Cut.jpg}};
+	
+	\vspace*{2cm} % Whitespace before the title
+	\raggedleft
+	{\LARGE Data Mining Project on}\\% First title line
+	%{\textcolor{Red}
+	\textsf{\textbf{\Huge\selectfont Human Resources Analytics}}\\ % Main title line which draws the focus of the reader
+
+	{\Large \textit{Why are our best and most experienced employees leaving prematurely?}} % Subtitle
+	
+	\vspace*{12.7cm}
+	{\large aa 2017/2018} % Year
+	
+	\end{titlepage}
+\end{document}

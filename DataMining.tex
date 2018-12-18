@@ -1,0 +1,46 @@
+\documentclass[10pt]{article}
+
+\usepackage[margin=2.3cm]{geometry} %margins
+\usepackage{amsmath}
+\usepackage{listings}% per il codice
+\usepackage[framed,num  bered,autolinebreaks,useliterate]{mcode}
+\lstset{language=java,basicstyle=\ttfamily\footnotesize, stringstyle=\ttfamily\color{black}}
+\usepackage[utf8]{inputenc} % Accenti
+\usepackage{geometry} % Per L'Indice
+\usepackage[hidelinks]{hyperref} % Indice Ipertestuale
+\usepackage{pdfpages} % Per Includere Pdf
+\usepackage[italian]{babel} % Lingua Italiana
+\usepackage{wasysym} %per checkmark
+\usepackage{listings} % Per codice
+\usepackage{color} % Per colori rgb
+\usepackage[font=small,labelfont=bf]{caption} % Required for specifying captions to tables and figures
+
+\PassOptionsToPackage{hyphens}{url} % Per link
+\usepackage{graphicx,wrapfig,lipsum}
+\usepackage{float}
+\usepackage{multicol}
+\setlength\columnsep{20pt} % This is the default columnsep for all pages
+
+
+\begin{document}
+	
+	\pagenumbering{gobble}
+	
+	\includepdf{Title/TitlePage.pdf}	
+	
+	\tableofcontents
+	4.3 \hspace{0.3cm}Discussione sul miglior modello di predizione . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20 \\ \\
+	\vspace{0.8cm}
+	\hspace{-0.2cm}\textbf{Conclusioni}\hspace{14.6cm}\textbf{20}
+
+	\pagenumbering{arabic}
+	\clearpage
+	\let\clearpage\relax %per non andare a pagina nuova dopo section
+	\include{Chapters/Intro}
+	\include{Chapters/Chapter1}
+	\include{Chapters/Chapter2}
+	\include{Chapters/Chapter3}
+	\include{Chapters/Chapter4}
+	\include{Chapters/Summary}
+	\newpage
+\end{document}

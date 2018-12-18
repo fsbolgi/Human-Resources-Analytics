@@ -1,0 +1,41 @@
+\select@language {italian}
+\select@language {italian}
+\contentsline {section}{\nameref {sec:intro}}{2}{section*.2}
+\contentsline {section}{\numberline {1}Data Understanding}{2}{section.1}
+\contentsline {subsection}{\numberline {1.1}Descrizione del database}{2}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.2}Distribuzione delle variabili}{3}{subsection.1.2}
+\contentsline {paragraph}{satisfaction\_level}{3}{section*.5}
+\contentsline {paragraph}{last\_evaluation}{3}{section*.7}
+\contentsline {paragraph}{number\_project}{4}{section*.9}
+\contentsline {paragraph}{average\_monthly\\ \_hours}{4}{section*.11}
+\contentsline {paragraph}{time\_spent\\ \_company}{4}{section*.13}
+\contentsline {paragraph}{work\_accident}{4}{section*.15}
+\contentsline {paragraph}{left}{4}{section*.17}
+\contentsline {paragraph}{promotion\_\\ last\_5years}{4}{section*.19}
+\contentsline {paragraph}{salary}{5}{section*.21}
+\contentsline {paragraph}{departments}{5}{section*.23}
+\contentsline {subsection}{\numberline {1.3}Missing values e outliers}{5}{subsection.1.3}
+\contentsline {subsection}{\numberline {1.4}Discretizzazione e normalizzazione}{5}{subsection.1.4}
+\contentsline {subsection}{\numberline {1.5}Correlazioni tra le variabili}{6}{subsection.1.5}
+\contentsline {section}{\numberline {2}Clustering}{7}{section.2}
+\contentsline {subsection}{\numberline {2.1}Clustering con K-means}{7}{subsection.2.1}
+\contentsline {subsubsection}{\numberline {2.1.1}Identificazione del miglior numero di centroidi}{7}{subsubsection.2.1.1}
+\contentsline {subsubsection}{\numberline {2.1.2}Caratterizzazione dei clusters ottenuti}{8}{subsubsection.2.1.2}
+\contentsline {subsection}{\numberline {2.2}Clustering con DBscan}{10}{subsection.2.2}
+\contentsline {subsubsection}{\numberline {2.2.1}Studio dei parametri}{10}{subsubsection.2.2.1}
+\contentsline {subsubsection}{\numberline {2.2.2}Caratterizzazione dei clusters ottenuti}{11}{subsubsection.2.2.2}
+\contentsline {subsection}{\numberline {2.3}Clustering con Hierarchical}{12}{subsection.2.3}
+\contentsline {subsubsection}{\numberline {2.3.1}Scelta tra i diversi algoritmi}{12}{subsubsection.2.3.1}
+\contentsline {subsection}{\numberline {2.4}Valutazione finale del miglior metodo di clustering}{13}{subsection.2.4}
+\contentsline {section}{\numberline {3}Association Rules}{14}{section.3}
+\contentsline {subsection}{\numberline {3.1}Preparazione dei dati}{14}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Estrazione degli itemsets pi\IeC {\`u} frequenti}{14}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Estrazione delle regole di associazione}{15}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.4}Predire tramite le regole di associazione se un impiegato lascer\IeC {\`a} l'azienda}{16}{subsection.3.4}
+\contentsline {section}{\numberline {4}Classification}{17}{section.4}
+\contentsline {subsection}{\numberline {4.1}Generazione dei decision trees}{17}{subsection.4.1}
+\contentsline {subsubsection}{\numberline {4.1.1}Validazione dei decision trees tramite test e training set}{17}{subsubsection.4.1.1}
+\contentsline {subsubsection}{\numberline {4.1.2}Decision tree su dataset non bilanciato}{18}{subsubsection.4.1.2}
+\contentsline {subsubsection}{\numberline {4.1.3}Decision tree su dataset bilanciato}{18}{subsubsection.4.1.3}
+\contentsline {subsection}{\numberline {4.2}Random Forest}{19}{subsection.4.2}
+\contentsline {subsubsection}{\numberline {4.2.1}Validazione tramite test e training set su dataset non bilanciato e bilanciato}{19}{subsubsection.4.2.1}
